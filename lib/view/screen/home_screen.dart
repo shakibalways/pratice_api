@@ -84,35 +84,17 @@
 //         ));
 //   }
 // }
-import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:practice_api_r/controller/api%20call/product_api.dart';
 import 'package:practice_api_r/models/product_model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
-
 class _HomeScreenState extends State<HomeScreen> {
-  Future<ProductModel> apiService() async {
-    try {
-      var response = await http.get(Uri.parse(
-          "https://cit-ecommerce-codecanyon.bandhantrade.com/api/app/v1/products"));
-      var data = jsonDecode(response.body.toString());
-      if (response.statusCode == 200) {
-        return ProductModel.fromJson(data);
-      } else {
-        return ProductModel.fromJson(data);
-      }
-    } catch (e) {
-      print('Error fetching products: $e');
-      throw e;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -122,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: SingleChildScrollView(
         child: FutureBuilder<ProductModel>(
-          future: apiService(),
+          future: ProductService.apiService(),
           builder: (context, AsyncSnapshot<ProductModel> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -145,7 +127,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 return Container(
                   color: Colors.yellow,
                   child: Column(
-
                     children: [
                       Container(
                         decoration: BoxDecoration(
@@ -158,34 +139,34 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                    SizedBox(
-                      height: 80,
-                      width: 300,
-
-
-                      child: Card(
-
-
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.zero,
+                      SizedBox(
+                        height: 80,
+                        width: 300,
+                        child: Card(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.zero,
+                          ),
+                          color: Colors.red,
+                          child: Column(
+                            children: [
+                              Text(
+                                  snapshot.data!.products![index].brand
+                                      .toString(),
+                                  style: const TextStyle(color: Colors.white)),
+                              Text(
+                                snapshot.data!.products![index].rating
+                                    .toString(),
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                              Text(
+                                snapshot.data!.products![index].regPrice
+                                    .toString(),
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          ),
                         ),
-                        color: Colors.red,
-                        child: Column(
-                          children: [
-                            Text(snapshot.data!.products![index].brand.toString(),
-                                style: const TextStyle(color: Colors.white)),
-                            Text(
-                              snapshot.data!.products![index].rating.toString(),
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                            Text(
-                              snapshot.data!.products![index].regPrice.toString(),
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
+                      )
                     ],
                   ),
                 );
